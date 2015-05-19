@@ -6,8 +6,13 @@ Find out who hogs (memory|CPU) on your system.
 
 If you have `npm` installed, do:
 ```
-npm install -g hog
+git clone https://github.com/hellerve/hog
+cd hog
+npm install -g
 ```
+
+*Someone seems to have taken `hog` on npmjs before me.
+Sorry!*
 
 ## Usage
 ```
