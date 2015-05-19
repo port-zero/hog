@@ -1,0 +1,32 @@
+{
+  "name": "hog",
+  "version": "0.1.0",
+  "description": "who the fuck is memory-hogging?",
+  "main": "index.js",
+  "bin": {
+    "hog": "index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/hellerve/hog.git"
+  },
+  "keywords": [
+    "memory",
+    "hog"
+  ],
+  "author": "Veit Heller",
+  "license": "GPLv2",
+  "bugs": {
+    "url": "https://github.com/hellerve/hog/issues"
+  },
+  "homepage": "https://github.com/hellerve/hog",
+  "dependencies": {
+    "control.monads": "^0.6.0",
+    "data.maybe": "^1.2.0",
+    "data.task": "^3.0.0",
+    "ps-node": "^0.0.4"
+  }
+}
