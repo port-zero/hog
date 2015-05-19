@@ -6,6 +6,7 @@ var
   ;
 
 const HOG_DEFAULT = "mem";
+const QUOTA = 25;
 
 // data Hog = { name :: String, mem :: Number, cpu :: Number }
 
@@ -141,7 +142,7 @@ var getHoggy = function(args) {
 //  main :: String -> IO ()
 var main = function(out, args) {
   var hoggy = getHoggy(args);
-  var hog = parseOut(out).filter(function(el) { return el[hoggy] > 25; });
+  var hog = parseOut(out).filter(function(el) { return el[hoggy] > QUOTA; });
   
   if (!hog.length) showNoone();
   else showHog(hog, hoggy);
