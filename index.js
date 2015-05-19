@@ -89,19 +89,18 @@ var resolveHogString = function(hoggy) {
 // showHog :: [Hog] -> IO ()
 var showHog = function(hog, hoggy) {
   if(hog.length == 1) {
-    console.log('There is a single culprit; it is '
-                + hog[0].name
-                + ' with '
-                + hog[0][hoggy]
-                + '% '
+    console.log(hog[0].name
+                + ': the '
                 + resolveHogString(hoggy)
-                + ' used.'
+                + ' is over '
+                + hog[0][hoggy]
+                + '(%)!!!'
               );
   } else {
     var _culprits = hog.map(function(h) {
-          return '\t ' + h[hoggy] + '% ' + resolveHogString(hoggy) + ' used by ' + h.name;
+          return '\t ' + h.name + ': the ' + resolveHogString(hoggy) + ' is over ' + h[hoggy] + '(%)!!!';
     });
-    console.log('There are multiple culprits; they are \n' + _culprits.join('\n'));
+    console.log('There are multiple culprits:\n' + _culprits.join('\n'));
   }
 }
 
