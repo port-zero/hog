@@ -58,7 +58,7 @@ var internalError = function(err) {
   process.exit(1);
 }
 
-//  inb4 :: IO () | Solely Side Effect
+//  inb4 :: Args -> Error -> String -> IO () | Solely Side Effect
 var inb4 = function(args, err, errout) {
   var _h = last(args).get();
 
@@ -133,12 +133,13 @@ var parseOut = function(out) {
   return hogs;
 }
 
+//  getHoggy :: Args -> String
 var getHoggy = function(args) {
   if(args.length > 2) return last(args).get();
   else return HOG_DEFAULT;
 }
 
-//  main :: String -> IO ()
+//  main :: String -> Args -> IO ()
 var main = function(out, args) {
   var hoggy = getHoggy(args);
   var hog = parseOut(out).filter(function(el) { return el[hoggy] > QUOTA; });
