@@ -49,7 +49,12 @@ var contains = function(l, el) {
 
 //  printUsage :: IO ()
 var printUsage = function() {
-  console.log("usage: hog [-h|--help]\n\twhere: -h|--help = please help me");
+  console.log("usage: hog [-h|--help] <cpu|mem>\n"
+              + "\twhere: -h|--help = please help me\n"
+              + "\t       cpu       = show cpu hogs\n"
+              + "\t       mem       = show memory hogs\n"
+              + "\t       default   = mem"
+             );
 }
 
 //  internalError :: IO ()
