@@ -45,6 +45,17 @@ var contains = function(l, el) {
   return l.indexOf(el) != -1;
 }
 
+//  containsAny :: [a] -> [a] -> Boolean
+var containsAny = function(l, els) {
+  return l.reduce(function(p, c) { return contains(els, c) || p; });
+}
+
+//  defaultMaybe :: Maybe a -> a -> a
+var defaultMaybe = function(maybe, d) {
+  return maybe.cata({ Just: function(x) { return x; },
+                      Nothing: function() { return d; }});
+}
+
 // Program Helpers
 
 //  printUsage :: IO ()
@@ -65,19 +76,26 @@ var internalError = function(err) {
 
 //  inb4 :: Args -> Error -> String -> IO () | Solely Side Effect
 var inb4 = function(args, err, errout) {
-  var _h = last(args).get();
+  var _inb4 = function() {
+    if (err || errout) internalError('process list could not be obtained because of ' + err);
 
-  if (err || errout) internalError('process list could not be obtained because of ' + err);
+    if (args.length > 2 && 
+        !containsAny(args, ['cpu', 'mem', '-h', '--help'])) {
+      printUsage();
+      process.exit(1);
+    }
+  };
+  var _h = last(args).cata({
+    Nothing: _inb4,
+    Just: function(h) {
+      _inb4();
 
-  if (args.length === 3 && _h == '-h' || _h == '--help') {
-    printUsage();
-    process.exit(0);
-  }
-  
-  if (args.length > 2 && !contains(args, 'cpu') && !contains(args, 'mem')) {
-    printUsage();
-    process.exit(1);
-  }
+      if (args.length === 3 && h == '-h' || h == '--help') {
+        printUsage();
+        process.exit(0);
+      }
+    }
+  });
 }
 
 //  showNoone :: IO ()
@@ -120,7 +138,8 @@ var parseCpuMem = function(mem) {
   if (!mem) return 0;
 
   var nums = mem.split(',');
-  return Number(head(nums).get()) + decimalPoint(tail(nums).get());
+  return Number(defaultMaybe(head(nums), 0)) 
+         + decimalPoint(defaultMaybe(tail(nums), []));
 }
 
 //  parseOut :: String -> [Hog]
@@ -130,9 +149,9 @@ var parseOut = function(out) {
     var elements = line.replace(/\s+/, ' ').split(' ').filter(function(el) { return !!el; });
     var cpumem = elements.filter(function(el) { return el.match(/\d+,\d+/); });
     if (cpumem.length) hogs.push({
-                        name: element(elements, 10).get(), 
-                        mem: parseCpuMem(last(cpumem).get()),
-                        cpu: parseCpuMem(head(cpumem).get())
+                        name: defaultMaybe(element(elements, 10), "no name"),
+                        mem: parseCpuMem(defaultMaybe(last(cpumem), 0)),
+                        cpu: parseCpuMem(defaultMaybe(head(cpumem), 0))
                       });
   });
   return hogs;
@@ -140,7 +159,7 @@ var parseOut = function(out) {
 
 //  getHoggy :: Args -> String
 var getHoggy = function(args) {
-  if(args.length > 2) return last(args).get();
+  if(args.length > 2) return defaultMaybe(last(args), "");
   else return HOG_DEFAULT;
 }
 
