@@ -1,7 +1,7 @@
 {
   "name": "hog",
-  "version": "0.1.0",
-  "description": "who the fuck is memory-hogging?",
+  "version": "0.1.1",
+  "description": "who the fuck is (memory|cpu)-hogging?",
   "main": "index.js",
   "bin": {
     "hog": "index.js"
@@ -15,6 +15,7 @@
   },
   "keywords": [
     "memory",
+    "cpu",
     "hog"
   ],
   "author": "Veit Heller",

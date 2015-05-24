@@ -5,7 +5,7 @@ var
   , Maybe = require('data.maybe')
   ;
 
-const HOG_DEFAULT = "mem";
+const HOG_DEFAULT = 'mem';
 const QUOTA = 25;
 
 // data Hog = { name :: String, mem :: Number, cpu :: Number }
@@ -56,14 +56,21 @@ var defaultMaybe = function(maybe, d) {
                       Nothing: function() { return d; }});
 }
 
+//  higher :: Compare a => a -> a -> a
+var higher = function(x, y) {
+  if (y > x) return y;
+  return x;
+}
+
 // Program Helpers
 
 //  printUsage :: IO ()
 var printUsage = function() {
-  console.log("usage: hog [-h|--help] <cpu|mem>\n"
+  console.log("usage: hog [-h|--help] <cpu|mem|all>\n"
               + "\twhere: -h|--help = please help me\n"
               + "\t       cpu       = show cpu hogs\n"
               + "\t       mem       = show memory hogs\n"
+              + "\t       all       = show cpu and memory hogs (although the output will not be as helpful)\n"
               + "\t       default   = mem"
              );
 }
@@ -80,12 +87,12 @@ var inb4 = function(args, err, errout) {
     if (err || errout) internalError('process list could not be obtained because of ' + err);
 
     if (args.length > 2 && 
-        !containsAny(args, ['cpu', 'mem', '-h', '--help'])) {
+        !containsAny(args, ['cpu', 'mem', 'all', '-h', '--help'])) {
       printUsage();
       process.exit(1);
     }
   };
-  var _h = last(args).cata({
+  last(args).cata({
     Nothing: _inb4,
     Just: function(h) {
       _inb4();
@@ -105,6 +112,7 @@ var showNoone = function() {
 
 //  resolveHogString :: String
 var resolveHogString = function(hoggy) {
+  if(hoggy == 'all') return 'cpu or memory';
   if(hoggy == 'mem') return 'memory';
   return hoggy;
 }
@@ -137,22 +145,34 @@ var decimalPoint = function(num) {
 var parseCpuMem = function(mem) {
   if (!mem) return 0;
 
-  var nums = mem.split(',');
-  return Number(defaultMaybe(head(nums), 0)) 
-         + decimalPoint(defaultMaybe(tail(nums), []));
+  var _nums = mem.split(',');
+  return Number(defaultMaybe(head(_nums), 0)) 
+         + decimalPoint(defaultMaybe(tail(_nums), []));
+}
+
+//  makeHog :: String -> Number -> Number -> Hog
+var makeHog = function(name, mem, cpu) {
+  return {
+            name: name,
+            mem: mem,
+            cpu: cpu,
+            all: higher(cpu, mem)
+         };
 }
 
 //  parseOut :: String -> [Hog]
 var parseOut = function(out) {
   var hogs = [];
   out.split('\n').forEach(function(line) {
-    var elements = line.replace(/\s+/, ' ').split(' ').filter(function(el) { return !!el; });
-    var cpumem = elements.filter(function(el) { return el.match(/\d+,\d+/); });
-    if (cpumem.length) hogs.push({
-                        name: defaultMaybe(element(elements, 10), "no name"),
-                        mem: parseCpuMem(defaultMaybe(last(cpumem), 0)),
-                        cpu: parseCpuMem(defaultMaybe(head(cpumem), 0))
-                      });
+    var _elements = line.replace(/\s+/, ' ').split(' ').filter(function(el) { return !!el; });
+    var _cpumem = _elements.filter(function(el) { return el.match(/\d+,\d+/); });
+    if (_cpumem.length) hogs.push(
+                          makeHog(
+                            defaultMaybe(element(_elements, 10), "no name given"),
+                            parseCpuMem(defaultMaybe(last(_cpumem), 0)),
+                            parseCpuMem(defaultMaybe(head(_cpumem), 0))
+                          )
+                        );
   });
   return hogs;
 }
@@ -165,11 +185,11 @@ var getHoggy = function(args) {
 
 //  main :: String -> Args -> IO ()
 var main = function(out, args) {
-  var hoggy = getHoggy(args);
-  var hog = parseOut(out).filter(function(el) { return el[hoggy] > QUOTA; });
+  var _hoggy = getHoggy(args);
+  var _hog = parseOut(out).filter(function(el) { return el[_hoggy] > QUOTA; });
   
-  if (!hog.length) showNoone();
-  else showHog(hog, hoggy);
+  if (!_hog.length) showNoone();
+  else showHog(_hog, _hoggy);
 }
 
 processes = exec('ps aux', function(err, stdout, stderr) {
