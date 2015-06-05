@@ -1,4 +1,6 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --harmony
+
+'use strict';
 
 var 
     exec  = require('child_process').exec
@@ -192,7 +194,7 @@ var main = function(out, args) {
   else showHog(_hog, _hoggy);
 }
 
-processes = exec('ps aux', function(err, stdout, stderr) {
+exec('ps aux', function(err, stdout, stderr) {
   inb4(process.argv, err, stderr);
   main(stdout, process.argv);
 });

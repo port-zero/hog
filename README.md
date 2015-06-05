@@ -16,7 +16,7 @@ Sorry!*
 
 ## Usage
 ```
-hog [cpu|mem]
+hog <cpu|mem|all>
 ```
 
 Searches for clutters. Per default, it searches for memory hogs 
