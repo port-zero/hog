@@ -19,7 +19,7 @@
     "hog"
   ],
   "author": "Veit Heller",
-  "license": "GPLv2",
+  "license": "GPL-2.0",
   "bugs": {
     "url": "https://github.com/hellerve/hog/issues"
   },
@@ -27,7 +27,6 @@
   "dependencies": {
     "control.monads": "^0.6.0",
     "data.maybe": "^1.2.0",
-    "data.task": "^3.0.0",
-    "ps-node": "^0.0.4"
+    "data.task": "^3.0.0"
   }
 }
